@@ -1,0 +1,120 @@
+---
+- hosts: all
+  become: yes
+  become_user: root
+  become_method: sudo
+  tasks:
+    - name: Instala tudo
+      apt:
+        name: "{{ packages }}"
+        state: present
+        update_cache: yes
+      vars:
+        packages:
+        - vim
+        - htop
+        - curl
+        - wget
+        - ncdu
+        - tree
+        - apt-transport-https
+        - ca-certificates
+        - gnupg
+        - python3-pip
+        - make
+        - git
+        - bash-completion
+        - gnupg-agent
+        - flameshot
+        - fonts-hack
+        - tilix
+        - mlocate
+        - jq
+        - mtr
+        - zip
+        - unzip
+        - openjdk-11-jdk
+        - ruby
+        - ubuntu-desktop
+        - xrdp
+
+    - name: Install Google Key
+      apt_key: 
+        url: 'https://dl.google.com/linux/linux_signing_key.pub'
+        state: present
+    - name: Install Google Repository
+      apt_repository:
+        repo: 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main'
+        state: present
+        filename: google-chrome
+    - name: Install Google Chrome
+      apt:
+        name: google-chrome-stable
+    - name: Install Docker Key
+      apt_key:
+        url: 'https://download.docker.com/linux/ubuntu/gpg'
+        state: present
+    - name: Install Docker Repository
+      apt_repository:
+        repo: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable'
+        state: present
+        filename: docker-ce
+    - name: Install Docker
+      apt:
+        name: docker-ce
+    - name: Adding existing user to group Docker
+      become: yes
+      user: 
+        name: '{{ ansible_user_id }}'
+        groups: docker 
+        append: yes
+    - name: Install Docker-Compose
+      get_url:
+        url: 'https://github.com/docker/compose/releases/download/1.26.2/docker-compose-Linux-x86_64'
+        dest: '/usr/local/bin/docker-compose'
+        mode: 755
+    
+    - name: Add Vagrant permissão para executar o docker
+      command: usermod -aG docker vagrant
+
+    - name: Instala depedências Android Studio
+      apt:
+        name: "{{ packages }}"
+        state: present
+        update_cache: yes
+      vars:
+        packages:
+        - libc6
+        - libncurses5 
+        - libstdc++6 
+        - lib32z1 
+        - libbz2-1.0
+
+    - name: Install android-studio
+      snap:
+        name: android-studio
+        classic: yes
+
+    - name: Clone de APP de exemplo
+      ansible.builtin.git:
+        repo: https://github.com/robotframework/WebDemo.git
+        dest: /home/vagrant/WebDemo
+        single_branch: yes
+        version: master
+
+# Esse bloco é se achar necessário ele subir automatico os testes
+
+#    - name: Start APP
+#      command: python3 /home/vagrant/WebDemo/demoapp/server.py &
+#
+#    - name: Criando container
+#      command: docker run -v /home/vagrant/WebDemo/login_tests:/opt/robotframework/tests:Z -e BROWSER=chrome ppodgorsek/robot-framework:latest
+
+
+   - name: Reboot the server
+     tags: reboot
+     become: yes
+     become_user: root
+     shell: "sleep 5 && reboot"
+     async: 1
+     poll: 0
