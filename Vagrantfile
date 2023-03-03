@@ -4,7 +4,7 @@
 VAGRANT_DISABLE_VBOXSYMLINKCREATE=1
 
 vms = {
-  'tools-qa' => {'memory' => '4096', 'cpus' => 1, 'ip' => '100', 'box' => 'ubuntu/jammy64', 'provision' => 'provision/ansible/tools-qa.yml'}
+  'tools-qa' => {'memory' => '2048', 'cpus' => 1, 'ip' => '100', 'box' => 'ubuntu/focal64', 'provision' => 'provision/ansible/tools-qa.yml'}
   
 }
 
@@ -24,7 +24,7 @@ Vagrant.configure('2') do |config|
       k.vm.provider 'virtualbox' do |vb|
         vb.gui = true
         vb.customize ['modifyvm', :id, '--graphicscontroller', 'vmsvga']
-        vb.customize ["modifyvm", :id, "--vram", "128"]
+        vb.customize ["modifyvm", :id, "--vram", "64"]
         vb.memory = conf['memory']
         vb.cpus = conf['cpus']
       end
