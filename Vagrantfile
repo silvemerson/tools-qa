@@ -4,7 +4,7 @@
 VAGRANT_DISABLE_VBOXSYMLINKCREATE=1
 
 vms = {
-  'tools-qa' => {'memory' => '2048', 'cpus' => 1, 'ip' => '100', 'box' => 'ubuntu/focal64', 'provision' => 'provision/ansible/tools-qa.yml'}
+  'tools-qa' => {'memory' => '2048', 'cpus' => 1, 'ip' => '100', 'box' => 'bento/ubuntu-22.04', 'provision' => 'provision/ansible/tools-qa.yml'}
   
 }
 

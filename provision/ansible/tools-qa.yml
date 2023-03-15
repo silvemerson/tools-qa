@@ -36,6 +36,10 @@
         #- openjdk-11-jdk
         - xrdp
         - ubuntu-desktop
+        
+    - name: Install firefox 
+      community.general.snap:
+        name: firefox
 
     - name: Install Google Key
       apt_key: 
@@ -90,6 +94,36 @@
       ansible.builtin.pip:
         name: docker
 
+    - name: change permissions directory WebDemo
+      file:
+        path: /home/vagrant/WebDemo
+        state: directory
+        owner: vagrant
+        group: vagrant
+
+    - name: change permissions directory login_tests
+      file:
+        path: /home/vagrant/WebDemo/login_tests
+        state: directory
+        owner: vagrant
+        group: vagrant
+
+    - name: lookup files with a certain pattern
+      find:
+        paths: /home/vagrant/WebDemo
+        file_type: file
+        patterns: "*"
+      register: filelist
+
+    - name: change permissions files
+      file:
+        path: "{{ item.path }}"
+        state: file
+        owner: vagrant
+        group: vagrant
+      with_items: "{{ filelist.files }}"
+
+
     - name: Install specified python requirements
       ansible.builtin.pip:
         requirements: /home/vagrant/WebDemo/requirements.txt
@@ -98,8 +132,6 @@
       community.docker.docker_image:
         name: ppodgorsek/robot-framework:latest
         source: pull   
-    - name: Configurando ABNT2
-      commando: apt-get install language-pack-gnome-pt language-pack-pt-base
 
     - name: Reboot the server
       tags: reboot
